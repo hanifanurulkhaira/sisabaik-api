@@ -21,8 +21,26 @@ function keHeader(row) {
     };
 }
 
-async function bacaDetail(id, client) {
-    const header = await client.query(`${headerSql} WHERE ps.id=$1`, [id]);
+function cakupan(pengguna) {
+    if (pengguna.peran === "pembeli") {
+        return { kolom: "ps.pembeli_id", id: pengguna.id };
+    }
+    if (pengguna.peran === "penyedia" && pengguna.penyediaId) {
+        return { kolom: "ps.penyedia_id", id: pengguna.penyediaId };
+    }
+    throw new HttpError(
+        403,
+        "ROLE_FORBIDDEN",
+        "Profil atau peran tidak diizinkan.",
+    );
+}
+
+async function bacaDetail(id, client, pengguna) {
+    const scope = cakupan(pengguna);
+    const header = await client.query(
+        `${headerSql} WHERE ps.id=$1 AND ${scope.kolom}=$2`,
+        [id, scope.id],
+    );
     if (!header.rowCount) {
         throw new HttpError(404, "ORDER_NOT_FOUND", "Pesanan tidak ditemukan.");
     }
@@ -45,18 +63,21 @@ async function bacaDetail(id, client) {
     };
 }
 
-export function detailPesanan(id) {
-    return transaksi((client) => bacaDetail(id, client), true);
+export function detailPesanan(id, pengguna) {
+    return transaksi((client) => bacaDetail(id, client, pengguna), true);
 }
 
-export function daftarPesanan(paging) {
+export function daftarPesanan(paging, pengguna) {
+    const scope = cakupan(pengguna);
     return transaksi(async (client) => {
         const count = await client.query(
-            "SELECT COUNT(*)::int AS jumlah FROM pesanan",
+            `SELECT COUNT(*)::int AS jumlah FROM pesanan ps WHERE ${scope.kolom}=$1`,
+            [scope.id],
         );
         const hasil = await client.query(
-            `${headerSql} ORDER BY ps.id DESC LIMIT $1 OFFSET $2`,
-            [paging.limit, paging.offset],
+            `${headerSql} WHERE ${scope.kolom}=$1
+            ORDER BY ps.id DESC LIMIT $2 OFFSET $3`,
+            [scope.id, paging.limit, paging.offset],
         );
         return {
             data: hasil.rows.map(keHeader),
@@ -65,12 +86,12 @@ export function daftarPesanan(paging) {
     }, true);
 }
 
-export function buatPesanan(data) {
+export function buatPesanan(data, pengguna) {
     return transaksi(async (client) => {
         const pembeli = await client.query(
-            `SELECT id FROM pengguna WHERE email=$1
-             AND peran='pembeli' AND aktif=TRUE`,
-            [data.emailPembeli],
+            `SELECT id FROM pengguna WHERE id=$1
+            AND peran='pembeli' AND aktif=TRUE`,
+            [data.pembeliId],
         );
         if (!pembeli.rowCount) {
             throw new HttpError(
@@ -84,7 +105,10 @@ export function buatPesanan(data) {
         let totalNormal = 0n;
         for (const baris of data.items) {
             const hasil = await client.query(
-                "SELECT * FROM penawaran WHERE id=$1 FOR UPDATE",
+                `SELECT p.* FROM penawaran p JOIN penyedia py ON py.id=p.penyedia_id
+                JOIN pengguna u ON u.id=py.pengguna_id WHERE p.id=$1
+                AND u.peran='penyedia' AND u.aktif=TRUE
+                AND py.status_verifikasi='terverifikasi' FOR UPDATE OF p`,
                 [baris.penawaranId],
             );
             if (!hasil.rowCount) {
@@ -133,14 +157,14 @@ export function buatPesanan(data) {
         }
         const pesanan = await client.query(
             `INSERT INTO pesanan (pembeli_id, penyedia_id)
-             VALUES ($1,$2) RETURNING id`,
+            VALUES ($1,$2) RETURNING id`,
             [pembeli.rows[0].id, penyediaId],
         );
         const id = pesanan.rows[0].id;
         for (const { item, kuantitas } of detail) {
             await client.query(
                 `INSERT INTO detail_pesanan (pesanan_id, penawaran_id, penyedia_id,
-                 kuantitas, harga_normal_satuan, harga_penawaran_satuan)
+                kuantitas, harga_normal_satuan, harga_penawaran_satuan)
                 VALUES ($1,$2,$3,$4,$5,$6)`,
                 [
                     id,
@@ -153,19 +177,19 @@ export function buatPesanan(data) {
             );
             await client.query(
                 `UPDATE penawaran SET stok=stok-$1,
-                 status=CASE WHEN stok-$1=0 THEN 'habis' ELSE status END
+                status=CASE WHEN stok-$1=0 THEN 'habis' ELSE status END
                 WHERE id=$2`,
                 [kuantitas, item.id],
             );
         }
         await client.query(
             `UPDATE pesanan ps SET total_transaksi=r.total,
-             nilai_stok_terselamatkan=r.nilai_stok
+            nilai_stok_terselamatkan=r.nilai_stok
             FROM (SELECT SUM(subtotal) AS total, SUM(nilai_stok) AS nilai_stok
-                FROM detail_pesanan WHERE pesanan_id=$1) r
+            FROM detail_pesanan WHERE pesanan_id=$1) r
             WHERE ps.id=$1`,
             [id],
         );
-        return bacaDetail(id, client);
+        return bacaDetail(id, client, pengguna);
     });
 }
