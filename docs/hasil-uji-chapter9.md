@@ -17,7 +17,7 @@ Pengujian dilakukan secara lokal pada antarmuka frontend Vue 3 dan Vite mengguna
 * Ringkasan Pembeli: Menghitung jumlah total penawaran aktif yang tersedia untuk diselamatkan berdasarkan waktu saat ini (real-time time checking), serta mengelompokkan kategori secara otomatis menggunakan `computed properties`.
 * Ringkasan Penyedia (Lapau Uni Rina): Menghitung total penawaran milik penyedia aktif, membedakan status penawaran (aktif, draft, habis, atau kedaluwarsa), serta menampilkan rekapitulasi stok yang dikelola oleh penyedia bersangkutan.
 
-## 4. Hasil Aktual Skenario Pengujian (Sesuai Langkah 12)
+## 4. Hasil Skenario Pengujian 
 1. Katalog & Filter: Berhasil menampilkan daftar produk makanan berlebih dengan lancar. Pencarian nama dan filter kategori bekerja secara reaktif.
 2. Empty State: Kondisi kosong (empty state) muncul dengan semestinya saat kata kunci pencarian atau kategori yang dipilih tidak ditemukan pada data tiruan.
 3. Form Invalid: Formulir penawaran baru berhasil mendeteksi kesalahan dan menampilkan peringatan validasi ketika input dikosongkan atau diisi dengan data yang tidak valid.
