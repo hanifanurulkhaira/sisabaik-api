@@ -7,14 +7,14 @@ export async function wajibLogin(req, res, next) {
     const header = req.get("authorization") ?? "";
     if (!header)
         throw new HttpError(
-            401,
-            "AUTH_REQUIRED",
-            "Silakan login terlebih dahulu.",
+        401,
+        "AUTH_REQUIRED",
+        "Silakan login terlebih dahulu.",
         );
     const cocok =
         header.length <= 2048 &&
         /^Bearer ([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)$/.exec(
-          header,
+        header,
         );
     if (!cocok)
         throw new HttpError(401, "TOKEN_INVALID", "Token tidak valid.");
@@ -27,9 +27,9 @@ export async function wajibLogin(req, res, next) {
         row.versi_token !== p.v
     ) {
         throw new HttpError(
-            401,
-            "SESSION_REVOKED",
-            "Sesi tidak berlaku. Silakan login lagi.",
+        401,
+        "SESSION_REVOKED",
+        "Sesi tidak berlaku. Silakan login lagi.",
         );
     }
     req.pengguna = kePengguna(row);
@@ -40,11 +40,11 @@ export async function wajibLogin(req, res, next) {
 export function wajibPeran(...peran) {
     return (req, res, next) => {
         if (!req.pengguna || !peran.includes(req.pengguna.peran)) {
-            throw new HttpError(
-                403,
-                "ROLE_FORBIDDEN",
-                "Peran Anda tidak diizinkan.",
-            );
+        throw new HttpError(
+            403,
+            "ROLE_FORBIDDEN",
+            "Peran Anda tidak diizinkan.",
+        );
         }
         next();
     };
@@ -56,9 +56,9 @@ export function wajibPenyediaTerverifikasi(req, res, next) {
         req.pengguna.statusVerifikasi !== "terverifikasi"
     ) {
         throw new HttpError(
-            403,
-            "PROVIDER_NOT_VERIFIED",
-            "Profil penyedia belum terverifikasi.",
+        403,
+        "PROVIDER_NOT_VERIFIED",
+        "Profil penyedia belum terverifikasi.",
         );
     }
     next();

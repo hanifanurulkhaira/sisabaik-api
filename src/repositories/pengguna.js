@@ -48,15 +48,15 @@ export async function cabutToken(id) {
 export async function buatPenyedia(data, hash) {
     return transaksi(async (client) => {
         const u = await client.query(
-            `INSERT INTO pengguna (nama_lengkap,email,peran,kata_sandi_hash)
-            VALUES ($1,$2,'penyedia',$3) RETURNING id`,
-            [data.namaLengkap, data.email, hash],
+        `INSERT INTO pengguna (nama_lengkap,email,peran,kata_sandi_hash)
+        VALUES ($1,$2,'penyedia',$3) RETURNING id`,
+        [data.namaLengkap, data.email, hash],
         );
         await client.query(
-            `INSERT INTO penyedia
-            (pengguna_id,nama_usaha,alamat,nomor_telepon,status_verifikasi)
-            VALUES ($1,$2,$3,$4,'menunggu')`,
-            [u.rows[0].id, data.namaUsaha, data.alamat, data.nomorTelepon],
+        `INSERT INTO penyedia
+        (pengguna_id,nama_usaha,alamat,nomor_telepon,status_verifikasi)
+        VALUES ($1,$2,$3,$4,'menunggu')`,
+        [u.rows[0].id, data.namaUsaha, data.alamat, data.nomorTelepon],
         );
         const row = await client.query(`${sql} WHERE u.id=$1`, [u.rows[0].id]);
         return row.rows[0];

@@ -36,7 +36,7 @@ async function api(path, method = "GET", body, token) {
 function status(r, expected) {
     assert.equal(
         r.status,
-         expected,
+        expected,
         `HTTP ${r.status}; code=${r.body?.error?.code ?? "-"}`,
     );
     checks++;
@@ -56,9 +56,9 @@ try {
         "SELECT current_database() AS nama")).rows[0].nama, "sisabaik_dev");
     for (const [email, nama] of [[emailRina, "Rina Uji"], [emailBudi, "Budi Uji"]]) {
         const reg = await api("/api/auth/registrasi-penyedia", "POST", {
-            namaLengkap: nama, email, kataSandi: password,
-            namaUsaha: `Dapur ${nama}`, alamat: "Jl. Kampus No. 8, Padang",
-            nomorTelepon: "+6281234567890",
+        namaLengkap: nama, email, kataSandi: password,
+        namaUsaha: `Dapur ${nama}`, alamat: "Jl. Kampus No. 8, Padang",
+        nomorTelepon: "+6281234567890",
         });
         status(reg, 201);
         assert.equal(reg.body.data.peran, "penyedia");
@@ -66,12 +66,12 @@ try {
         assert.equal(reg.body.data.namaUsaha, `Dapur ${nama}`);
         const sesi = await login(email);
         const pending = await api("/api/penawaran/milik-saya", "GET",
-            undefined, sesi.accessToken);
+        undefined, sesi.accessToken);
         status(pending, 403);
         assert.equal(pending.body.error.code, "PROVIDER_NOT_VERIFIED");
         const dbAkun = (await pool.query("SELECT id,kata_sandi_hash FROM pengguna WHERE email=$1", [email])).rows[0];
         assert.equal(String(dbAkun?.id), reg.body.data.id,
-            "Server HTTP dan script harus memakai database yang sama.");
+        "Server HTTP dan script harus memakai database yang sama.");
         assert.ok(dbAkun.kata_sandi_hash && dbAkun.kata_sandi_hash !== password);
         await verifikasiPenyedia(pool, email);
         const fresh = await api("/api/auth/saya", "GET", undefined, sesi.accessToken);
@@ -91,8 +91,8 @@ try {
     assert.ok(!("kata_sandi_hash" in reg.body.data));
     status(
         await api("/api/auth/registrasi", "POST", {
-            ...daftar,
-            peran: "penyedia",
+        ...daftar,
+        peran: "penyedia",
         }),
         400,
     );
@@ -138,10 +138,10 @@ try {
     );
     status(
         await api(
-            "/api/penawaran",
-            "POST",
-            { ...payload, penyediaId: budi.pengguna.penyediaId },
-            rina.accessToken,
+        "/api/penawaran",
+        "POST",
+        { ...payload, penyediaId: budi.pengguna.penyediaId },
+        rina.accessToken,
         ),
         400,
     );
@@ -155,15 +155,15 @@ try {
     const id = buat.body.data.id;
     assert.equal(buat.body.data.penyediaId, rina.pengguna.penyediaId);
     status(
-        await api(`/api/penawaran/${id}`, "PUT", payload, budi.accessToken),
+        await api(`/api/penawaran/${id}`, "PUT", { ...payload, versi: buat.body.data.versi }, budi.accessToken),
         404,
     );
     status(
         await api(
-            `/api/penawaran/${id}`,
-            "DELETE",
-            undefined,
-            budi.accessToken,
+        `/api/penawaran/${id}`,
+        "DELETE",
+        undefined,
+        budi.accessToken,
         ),
         404,
     );
@@ -174,10 +174,10 @@ try {
     );
     status(
         await api(
-            "/api/pesanan",
-            "POST",
-            { ...orderBody, emailPembeli: daftar.email },
-            siti.accessToken,
+        "/api/pesanan",
+        "POST",
+        { ...orderBody, emailPembeli: daftar.email },
+        siti.accessToken,
         ),
         400,
     );
@@ -193,28 +193,28 @@ try {
     assert.equal(order.body.data.total, 5000);
     status(
         await api(
-            `/api/pesanan/${orderId}`,
-            "GET",
-            undefined,
-            baru.accessToken,
+        `/api/pesanan/${orderId}`,
+        "GET",
+        undefined,
+        baru.accessToken,
         ),
         404,
     );
     status(
         await api(
-            `/api/pesanan/${orderId}`,
-            "GET",
-            undefined,
-            budi.accessToken,
+        `/api/pesanan/${orderId}`,
+        "GET",
+        undefined,
+        budi.accessToken,
         ),
         404,
     );
     status(
         await api(
-            `/api/pesanan/${orderId}`,
-            "GET",
-            undefined,
-            rina.accessToken,
+        `/api/pesanan/${orderId}`,
+        "GET",
+        undefined,
+        rina.accessToken,
         ),
         200,
     );
@@ -238,10 +238,10 @@ try {
     );
     status(
         await api(
-            `/api/penawaran/${id}`,
-           "PUT",
-            { ...payload, stok: 4, hargaPenawaran: 6000 },
-            rina.accessToken,
+        `/api/penawaran/${id}`,
+        "PUT",
+        { ...payload, stok: 4, hargaPenawaran: 6000, versi: (await api(`/api/penawaran/milik-saya/${id}`, "GET", undefined, rina.accessToken)).body.data.versi },
+        rina.accessToken,
         ),
         200,
     );
@@ -250,18 +250,18 @@ try {
         "GET",
         undefined,
         siti.accessToken,
-    ); 
+    );
     status(snapshot, 200);
     assert.equal(snapshot.body.data.items[0].hargaSatuan, 5000);
     status(
         await api(
-            `/api/penawaran/${id}`,
-            "DELETE",
-            undefined,
-            rina.accessToken,
+        `/api/penawaran/${id}`,
+        "DELETE",
+        undefined,
+        rina.accessToken,
         ),
         409,
-    )
+    );
     const draft = await api(
         "/api/penawaran",
         "POST",
@@ -272,10 +272,10 @@ try {
     status(await api(`/api/penawaran/${draft.body.data.id}`), 404);
     status(
         await api(
-            `/api/penawaran/${draft.body.data.id}`,
-            "DELETE",
-            undefined,
-            rina.accessToken,
+        `/api/penawaran/${draft.body.data.id}`,
+        "DELETE",
+        undefined,
+        rina.accessToken,
         ),
         204,
     );

@@ -17,11 +17,11 @@ export async function registrasi(data) {
         return akun.kePengguna(row);
     } catch (error) {
         if (error.code === "23505") {
-            throw new HttpError(
-                409,
-                "REGISTRATION_CONFLICT",
-                "Pendaftaran tidak dapat diproses.",
-            );
+        throw new HttpError(
+            409,
+            "REGISTRATION_CONFLICT",
+            "Pendaftaran tidak dapat diproses.",
+        );
         }
         throw error;
     }
@@ -35,9 +35,9 @@ export async function login(data) {
     );
     if (!row || !row.aktif || !row.kata_sandi_hash || !cocok) {
         throw new HttpError(
-            401,
-            "LOGIN_FAILED",
-            "Email atau kata sandi tidak valid.",
+        401,
+        "LOGIN_FAILED",
+        "Email atau kata sandi tidak valid.",
         );
     }
     return {
@@ -55,11 +55,11 @@ export async function registrasiPenyedia(data) {
         return akun.kePengguna(row);
     } catch (error) {
         if (error.code === "23505") {
-            throw new HttpError(
-                409,
-                "REGISTRATION_CONFLICT",
-                "Pendaftaran tidak dapat diproses.",
-            );
+        throw new HttpError(
+            409,
+            "REGISTRATION_CONFLICT",
+            "Pendaftaran tidak dapat diproses.",
+        );
         }
         throw error;
     }

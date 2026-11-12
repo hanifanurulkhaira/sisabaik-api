@@ -8,11 +8,11 @@ export const batasAuth = rateLimit({
     skipSuccessfulRequests: true,
     handler(req, res) {
         res.status(429).json({
-            success: false,
-            error: {
-                code: "AUTH_RATE_LIMIT",
-                message: "Terlalu banyak percobaan. Tunggu sesuai Retry-After.",
-            },
+        success: false,
+        error: {
+            code: "AUTH_RATE_LIMIT",
+            message: "Terlalu banyak percobaan. Tunggu sesuai Retry-After.",
+        },
         });
     },
 });
@@ -24,12 +24,12 @@ export const batasRegistrasi = rateLimit({
     legacyHeaders: false,
     handler(req, res) {
         res.status(429).json({
-            success: false,
-            error: {
-                code: "REGISTRATION_RATE_LIMIT",
-                message:
-                    "Terlalu banyak pendaftaran. Silakan coba kembali sesuai RetryAfter.",
-            },
+        success: false,
+        error: {
+            code: "REGISTRATION_RATE_LIMIT",
+            message:
+            "Terlalu banyak pendaftaran. Silakan coba kembali sesuai Retry-After.",
+        },
         });
     },
 });

@@ -10,10 +10,12 @@ export async function registrasi(req, res) {
     const data = await service.registrasi(registrasiValid(req.body));
     return res.status(201).json({ success: true, data });
 }
+
 export async function login(req, res) {
     const data = await service.login(loginValid(req.body));
     return res.json({ success: true, data });
 }
+
 export async function registrasiPenyedia(req, res) {
     const data = await service.registrasiPenyedia(
         registrasiPenyediaValid(req.body),

@@ -6,7 +6,9 @@ export async function transaksi(kerja, bacaSaja = false) {
     let rusak;
     try {
         await client.query(
-            bacaSaja ? "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY" : "BEGIN",
+        bacaSaja
+            ? "BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"
+            : "BEGIN",
         );
         dimulai = true;
         await client.query("SET LOCAL lock_timeout = '2s'");
@@ -16,11 +18,11 @@ export async function transaksi(kerja, bacaSaja = false) {
         return hasil;
     } catch (error) {
         if (dimulai) {
-            try {
-                await client.query("ROLLBACK");
-            } catch (gagal) {
-                rusak = gagal;
-            }
+        try {
+            await client.query("ROLLBACK");
+        } catch (gagal) {
+            rusak = gagal;
+        }
         }
         throw error;
     } finally {

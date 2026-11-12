@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-
+ 
 const base = process.argv[2] ?? "http://127.0.0.1:3000";
 const host = new URL(base).hostname;
 if (!["127.0.0.1", "localhost"].includes(host)) {
@@ -64,7 +64,7 @@ try {
     const gabungan = await request(
         "GET",
         `/api/penawaran?q=${encodeURIComponent(tanda)}` +
-            "&kategori=roti&status=aktif&tersedia=true",
+        "&kategori=roti&status=aktif&tersedia=true",
         undefined,
         200,
     );
@@ -87,14 +87,14 @@ try {
     assert.equal(injeksi.body.meta.jumlah, 0);
     await request("DELETE", path, undefined, 204);
     await request("GET", path, undefined, 404);
-
+    
     const a = (await request("POST", "/api/penawaran", payload, 201)).body.data;
     const b = (
         await request(
-            "POST",
-            "/api/penawaran",
-            { ...payload, penyediaId: "2", nama: `${tanda} kedua` },
-            201,
+        "POST",
+        "/api/penawaran",
+        { ...payload, penyediaId: "2", nama: `${tanda} kedua` },
+        201,
         )
     ).body.data;
     const pesan = (items) => ({
@@ -108,8 +108,8 @@ try {
         "POST",
         "/api/pesanan",
         pesan([
-            { penawaranId: a.id, kuantitas: 1 },
-            { penawaranId: b.id, kuantitas: 1 },
+        { penawaranId: a.id, kuantitas: 1 },
+        { penawaranId: b.id, kuantitas: 1 },
         ]),
         409,
     );
@@ -158,12 +158,12 @@ try {
         "PUT",
         `/api/penawaran/${a.id}`,
         {
-            ...payload,
-            hargaNormal: 20000,
-            hargaPenawaran: 8000,
-            stok: 0,
-            status: "habis",
-        },  
+        ...payload,
+        hargaNormal: 20000,
+        hargaPenawaran: 8000,
+        stok: 0,
+        status: "habis",
+        },
         200,
     );
     const snapshot = (await request("GET", order.location, undefined, 200))
@@ -173,7 +173,7 @@ try {
     await request("DELETE", `/api/penawaran/${b.id}`, undefined, 204);
     console.log(
         `SELESAI: pesanan ${order.body.data.id}, ` +
-            `penawaran ${a.id} tetap tersimpan.`,
+        `penawaran ${a.id} tetap tersimpan.`,
     );
 } catch (error) {
     console.error("FAIL:", error.message);

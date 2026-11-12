@@ -16,37 +16,37 @@ const emit = defineEmits(["ubah-pencarian", "ubah-kategori", "reset"]);
         @submit.prevent
     >
         <div>
-            <label for="cari">Cari makanan atau penyedia</label>
-            <div class="input-icon">
-                <Ikon nama="cari" /><input
-                    id="cari"
-                    type="search"
-                    maxlength="100"
-                    placeholder="Roti, nasi, atau nama usaha…"
-                    :value="props.pencarian"
-                    @input="emit('ubah-pencarian', $event.target.value)"
-                />
-            </div>
+        <label for="cari">Cari makanan atau penyedia</label>
+        <div class="input-icon">
+            <Ikon nama="cari" /><input
+            id="cari"
+            type="search"
+            maxlength="100"
+            placeholder="Roti, nasi, atau nama usaha…"
+            :value="props.pencarian"
+            @input="emit('ubah-pencarian', $event.target.value)"
+            />
+        </div>
         </div>
         <div>
-            <label for="kategori-filter">Kategori makanan</label
-            ><select
-                id="kategori-filter"
-                :value="props.kategori"
-                @change="emit('ubah-kategori', $event.target.value)"
+        <label for="kategori-filter">Kategori makanan</label
+        ><select
+            id="kategori-filter"
+            :value="props.kategori"
+            @change="emit('ubah-kategori', $event.target.value)"
+        >
+            <option value="">Semua kategori</option>
+            <option
+            v-for="nilai in props.daftarKategori"
+            :key="nilai"
+            :value="nilai"
             >
-                <option value="">Semua kategori</option>
-                <option
-                    v-for="nilai in props.daftarKategori"
-                    :key="nilai"
-                    :value="nilai"
-                >
-                    {{ visualKategori(nilai).label }}
-                </option>
-            </select>
+            {{ visualKategori(nilai).label }}
+            </option>
+        </select>
         </div>
         <button class="button-secondary" type="button" @click="emit('reset')">
-            <Ikon nama="ulang" />Reset filter
+        <Ikon nama="ulang" />Reset filter
         </button>
     </form>
 </template>

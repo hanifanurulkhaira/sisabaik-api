@@ -21,7 +21,7 @@ export function idValid(nilai, nama = "id") {
     if (
         !/^[1-9][0-9]{0,18}$/.test(teks) ||
         BigInt(teks) > 9223372036854775807n
-    ) { 
+    ) {
         salah(`${nama} tidak valid.`);
     }
     return teks;
@@ -56,7 +56,7 @@ export function halamanValid(query) {
     const baca = (nama, awal, max) => {
         const nilai = query[nama] ?? String(awal);
         if (typeof nilai !== "string" || !/^[1-9][0-9]*$/.test(nilai)) {
-            salah(`${nama} wajib integer positif; jangan kirim berulang.`);
+        salah(`${nama} wajib integer positif; jangan kirim berulang.`);
         }
         return angkaValid(Number(nilai), nama, 1, max);
     };
@@ -107,12 +107,17 @@ export function penawaranValid(body) {
         penyediaId: idValid(body.penyediaId, "penyediaId"),
         nama: teksValid(body.nama, "nama", 3, 120),
         kategori: teksValid(body.kategori, "kategori", 1, 40),
-        hargaNormal: angkaValid(body.hargaNormal, "hargaNormal", 1, 999999999999),
+        hargaNormal: angkaValid(
+        body.hargaNormal,
+        "hargaNormal",
+        1,
+        999999999999,
+        ),
         hargaPenawaran: angkaValid(
-            body.hargaPenawaran,
-            "hargaPenawaran",
-            0,
-            999999999999,
+        body.hargaPenawaran,
+        "hargaPenawaran",
+        0,
+        999999999999,
         ),
         stok: angkaValid(body.stok, "stok", 0, 2147483647),
         satuan: teksValid(body.satuan, "satuan", 1, 20),
@@ -127,7 +132,7 @@ export function penawaranValid(body) {
     const waktu = teksValid(body.berakhirPada, "berakhirPada", 20, 35);
     const polaWaktu = new RegExp(
         String.raw`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}` +
-            String.raw`(\.\d{1,3})?(Z|[+-]\d{2}:\d{2})$`,
+        String.raw`(\.\d{1,3})?(Z|[+-]\d{2}:\d{2})$`,
     );
     if (!polaWaktu.test(waktu)) {
         salah("berakhirPada wajib ISO 8601 dengan zona waktu.");
@@ -135,7 +140,8 @@ export function penawaranValid(body) {
     const tahun = Number(waktu.slice(0, 4));
     const bulan = Number(waktu.slice(5, 7));
     const hari = Number(waktu.slice(8, 10));
-    const kabisat = tahun % 4 === 0 && (tahun % 100 !== 0 || tahun % 400 === 0);
+    const kabisat =
+        tahun % 4 === 0 && (tahun % 100 !== 0 || tahun % 400 === 0);
     const hariBulan = [
         31,
         kabisat ? 29 : 28,
