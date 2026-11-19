@@ -21,7 +21,7 @@
         "db:init": "node --env-file=.env scripts/inisialisasi-aplikasi.js",
         "db:init:cloud": "node --env-file=.env.cloud scripts/inisialisasi-aplikasi.js --cloud",
         "penyedia:verifikasi": "node --env-file=.env scripts/verifikasi-penyedia.js",
-        "penyedia:verifikasi:cloud": "node --env-file=.env.cloud scripts/verifikasi-penyedia.js --cloud"
+        "penyedia:verifikasi:cloud": "node --env-file=.env.cloud scripts/verifikasipenyedia.js --cloud"
     },
     "engines": {
         "node": ">=22"

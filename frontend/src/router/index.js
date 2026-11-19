@@ -64,7 +64,7 @@ export const router = createRouter({
       props: {
         judul: "Akses ditolak",
         pesan: "Peran akun tidak sesuai halaman ini.",
-      },
+    },
     },
     {
       path: "/:pathMatch(.*)*",

@@ -22,7 +22,6 @@ for (const nama of [
     if (!process.env[nama])
         throw new Error(`Konfigurasi ${nama} belum diisi.`);
 }
-
 export const pool = new Pool({
     ssl: ssl === "require" ? { rejectUnauthorized: true } : false,
     max: 5,
@@ -30,7 +29,6 @@ export const pool = new Pool({
     idleTimeoutMillis: 10000,
     statement_timeout: 10000,
 });
-
 pool.on("error", (error) => {
     console.error("Koneksi idle bermasalah:", error.code ?? "DB_ERROR");
 });

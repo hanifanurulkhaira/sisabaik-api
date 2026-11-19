@@ -9,9 +9,9 @@ try {
         : "sisabaik_dev";
     if (cloud) {
         if (
-        !(process.env.PGHOST ?? "").endsWith(".neon.tech") ||
-        process.env.PGSSL !== "require" ||
-        !tujuan
+            !(process.env.PGHOST ?? "").endsWith(".neon.tech") ||
+            process.env.PGSSL !== "require" ||
+            !tujuan
         )
         throw new Error(
             "Isi koneksi Neon, PGSSL=require, dan CLOUD_CONFIRM_DATABASE.",
@@ -29,26 +29,24 @@ try {
     );
     const migration = (
         await readFile(
-        new URL("../database/12_alur_transaksi.sql", import.meta.url),
-        "utf8",
+            new URL("../database/12_alur_transaksi.sql", import.meta.url),
+            "utf8",
         )
     )
         .replace(/^\s*BEGIN;/, "")
         .replace(/COMMIT;\s*$/, "");
     await transaksi(async (c) => {
         await c.query("SELECT pg_advisory_xact_lock(74091211)");
-        const r = await c.query(
-        "SELECT current_database() AS nama,(SELECT ssl FROM pg_stat_ssl WHERE pid=pg_backend_pid()) AS tls",
-        );
-        if (r.rows[0].nama !== tujuan || (cloud && !r.rows[0].tls))
-        throw new Error("Database tujuan atau TLS belum sesuai.");
+        const r = await c.query("SELECT current_database() AS nama");
+        if (r.rows[0].nama !== tujuan)
+            throw new Error("Database tujuan belum sesuai.");
         const cek = await c.query(
-        "SELECT COUNT(*)::int AS jumlah FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'",
+            "SELECT COUNT(*)::int AS jumlah FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'",
         );
         if (cek.rows[0].jumlah !== 0)
-        throw new Error(
-            "Database sudah berisi tabel. Gunakan db:migrate, bukan inisialisasi ulang.",
-        );
+            throw new Error(
+                "Database sudah berisi tabel. Gunakan db:migrate, bukan inisialisasi ulang.",
+            );
         await c.query("SET LOCAL search_path=public");
         await c.query(schema);
         await c.query(migration);

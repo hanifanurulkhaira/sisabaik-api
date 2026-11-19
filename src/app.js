@@ -26,12 +26,12 @@ app.set("query parser", "simple");
 app.use(
     helmet({
         strictTransportSecurity: melaluiProxy
-        ? { maxAge: 15552000, includeSubDomains: false }
-        : false,
+            ? { maxAge: 15552000, includeSubDomains: false }
+            : false,
         contentSecurityPolicy: {
-        directives: {
-            upgradeInsecureRequests: melaluiProxy ? [] : null,
-        },
+            directives: {
+                upgradeInsecureRequests: melaluiProxy ? [] : null,
+            },
         },
     }),
 );
@@ -40,11 +40,11 @@ app.use("/api", (req, res, next) => {
     res.set("Cache-Control", "no-store");
     if (["POST", "PUT"].includes(req.method) && !req.is("application/json")) {
         return next(
-        new HttpError(
-            415,
-            "JSON_REQUIRED",
-            "Gunakan Content-Type application/json.",
-        ),
+            new HttpError(
+                415,
+                "JSON_REQUIRED",
+                "Gunakan Content-Type application/json.",
+            ),
         );
     }
     next();
@@ -66,9 +66,9 @@ app.get("/api/health", async (req, res) => {
     return res.json({
         success: true,
         data: {
-        status: "ok",
-        database: "connected",
-        waktu: new Date().toISOString(),
+            status: "ok",
+            database: "connected",
+            waktu: new Date().toISOString(),
         },
     });
 });
@@ -86,20 +86,20 @@ if (produksi) {
     app.use(
         "/assets",
         express.static(join(dist, "assets"), {
-        immutable: true,
-        maxAge: "1y",
+            immutable: true,
+            maxAge: "1y",
         }),
     );
     app.use(
         express.static(dist, {
-        setHeaders(res, path) {
-            if (path.endsWith(".html")) {
-            res.set("Cache-Control", "no-cache");
-            }
-        },
+            setHeaders(res, path) {
+                if (path.endsWith(".html")) {
+                    res.set("Cache-Control", "no-cache");
+                }
+            },
         }),
     );
-    } else {
+} else {
     app.use(
         express.static(fileURLToPath(new URL("../public/", import.meta.url))),
     );

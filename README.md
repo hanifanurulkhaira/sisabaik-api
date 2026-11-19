@@ -38,4 +38,4 @@ npm run dev
 3. Build Produksi & Pratinjau Lokal (Direktori frontend):
 ```bash
 npm run build
-npm run preview
+npm run previewQ

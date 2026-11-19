@@ -7,14 +7,14 @@ try {
     assert.ok(!asal.search && !asal.hash && !asal.username && !asal.password);
     assert.ok(
         asal.protocol === "https:" ||
-        (asal.protocol === "http:" &&
-            ["localhost", "127.0.0.1"].includes(asal.hostname)),
+            (asal.protocol === "http:" &&
+                ["localhost", "127.0.0.1"].includes(asal.hostname)),
         "Alamat publik wajib HTTPS.",
     );
     async function baca(path) {
         return fetch(new URL(path, asal), {
-        headers: { Accept: "application/json, text/html" },
-        signal: AbortSignal.timeout(120000),
+            headers: { Accept: "application/json, text/html" },
+            signal: AbortSignal.timeout(120000),
         });
     }
     function lulus(nama) {
@@ -45,8 +45,8 @@ try {
         const r = await baca(path);
         assert.equal(r.status, 200, path);
         assert.match(
-        r.headers.get("content-type") ?? "",
-        path.endsWith(".css") ? /text\/css/ : /javascript/,
+            r.headers.get("content-type") ?? "",
+            path.endsWith(".css") ? /text\/css/ : /javascript/,
         );
     }
     lulus("aset JavaScript dan CSS");
